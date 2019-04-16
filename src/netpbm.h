@@ -1,5 +1,6 @@
 #include <stdlib.h>
-
+#include <stdio.h>
+#include <string.h>
 
 /** TYPES */
 
@@ -44,7 +45,13 @@ struct rgb_image* create_rgb_image(uint width, uint height);
 struct grayscale_image* create_grayscale_image(uint width, uint height);
 
 /* Modifying data */
-struct grayscale_image* rgb_to_grayscale_image(struct rgb_image* image);
+struct grayscale_image* rgb_to_grayscale_image(struct rgb_image *image);
+
+/* File IO */
+struct rgb_image* open_rgb_image(char *file_path);
+struct grayscale_image* open_grayscale_image(char *file_path);
+int write_rgb_image(char *file_path, struct rgb_image *image);
+int write_grayscale_image(char *file_path, struct grayscale_image *image);
 
 /* Releasing memory */
 void free_rgb_image(struct rgb_image *image);

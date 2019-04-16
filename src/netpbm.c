@@ -88,3 +88,87 @@ struct grayscale_image* rgb_to_grayscale_image(struct rgb_image* image) {
 
     return result;
 }
+
+/**
+ * Tries to open the file that contains the image,
+ * then reads the header, which should consist of the image type (we expect P3),
+ * width, height, both in pixels, and the color scale.
+ *
+ * Creates the rgb_image where it's going to put all the data.
+ * After that tries to read width*height pixels, each containing 3 color channels and
+ * saves it into the matrix of the rgb_image that was created earlier.
+ *
+ * Returns NULL in case of an error or a pointer to struct rgb_image.
+ */
+struct rgb_image* open_rgb_image(char *file_path) {
+    // defining variables we'll need
+    char image_type[3];
+    uint width, height, scale;
+
+    int items_read;
+
+    // opening the file
+    FILE *stream = fopen(file_path, "r");
+    if (stream == NULL) return NULL;
+
+    // reading the header
+    items_read = fscanf(stream, "%2s %u %u %u", image_type, &width, &height, &scale);
+    if (items_read < 4) {
+        printf("<netpbm>: could not parse file header, only read %d items out of 4.\n", items_read);
+        return NULL;
+    }
+
+    // check for the specified format
+    if (strcmp(image_type, "P3") == 0) {
+        printf("<netpbm>: opened a file of format \"image/x-portable-pixmap\".\n");
+    } else {
+        printf("<netpbm>: incorrect file format, expected \"image/x-portable-pixmap\".\n");
+        return NULL;
+    }
+
+    // the resulting image is going to be store here
+    struct rgb_image* result = create_rgb_image(width, height);
+
+    // handy struct for the parsed pixels
+    struct rgb_color pixel;
+
+    // parsing width * height pixels
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            items_read = fscanf(stream, "%u %u %u", &pixel.r, &pixel.g, &pixel.b);
+            if (items_read < 3) {
+                printf("<netpbm>: parsing error, incorrect format.\n");
+                return NULL;
+            }
+
+            // TODO: remove debugging messages
+            result->matrix[y][x] = (struct rgb_color) { .r = pixel.r, .g = pixel.g, .b = pixel.b };
+            printf("<debug>: matrix[%d][%d] = { %u %u %u }\n", y, x, result->matrix[y][x].r, result->matrix[y][x].g, result->matrix[y][x].b);
+        }
+    }
+
+    printf("<netpbm>: successfully parsed the image.\n");
+
+    return result;
+}
+
+/**
+ *
+ */
+struct grayscale_image* open_grayscale_image(char *file_path) {
+    return NULL;
+}
+
+/**
+ *
+ */
+int write_rgb_image(char *file_path, struct rgb_image *image) {
+    return 0;
+}
+
+/**
+ *
+ */
+int write_grayscale_image(char *file_path, struct grayscale_image *image) {
+    return 0;
+}

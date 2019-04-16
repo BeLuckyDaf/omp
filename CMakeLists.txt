@@ -5,6 +5,10 @@ set(CMAKE_C_STANDARD 11)
 
 include_directories(src)
 
-add_executable(Code
+add_executable(Main
         src/netpbm.c
         src/netpbm.h)
+
+add_executable(Test
+        src/netpbm.c
+        src/netpbm.h tests/netpbm_test.c)
