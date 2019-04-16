@@ -72,9 +72,19 @@ void free_grayscale_image(struct grayscale_image *image) {
 }
 
 /**
- * Allocates memory for the new grayscale image and then find average color
- * for each pixel and thus converts colored image to the grayscale
+ * Creates a new grayscale image and then finds average color
+ * for each pixel in the colored image, assigns it to the corresponding
+ * pixel in the grayscale image, that is, converts it to grayscale
  */
 struct grayscale_image* rgb_to_grayscale_image(struct rgb_image* image) {
-    return NULL;
+    struct grayscale_image* result = create_grayscale_image(image->width, image->height);
+
+    for (uint y = 0; y < image->height; y++) {
+        for (uint x = 0; x < image->width; x++) {
+            uint average = (image->matrix[y][x].r + image->matrix[y][x].g + image->matrix[y][x].b)/3;
+            result->matrix[y][x] = average;
+        }
+    }
+
+    return result;
 }
