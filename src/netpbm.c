@@ -130,7 +130,8 @@ int get_netpbm_version(char* image_version) {
 }
 
 /**
- *
+ * Creates a file stream and reads the header of the image.
+ * Used not to repeat the same code in the image opening functions.
  */
 struct image_file* open_image_file(char* file_path, int expected_version) {
     // defining variables we'll need
