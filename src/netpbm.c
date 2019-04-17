@@ -5,13 +5,14 @@
  * Allocates memory for the given dimensions of an RGB image
  * and returns a pointer to the rgb_image structure
  */
-struct rgb_image* create_rgb_image(uint width, uint height) {
+struct rgb_image* create_rgb_image(uint width, uint height, uint scale) {
     // allocate for the structure
     struct rgb_image* image = (struct rgb_image*)malloc(sizeof(struct rgb_image));
 
     // set the dimensions
     image->width = width;
     image->height = height;
+    image->scale = scale;
 
     // allocate a pointer to hold pointers to rows
     // and pointers for the rows themselves
@@ -40,13 +41,14 @@ void free_rgb_image(struct rgb_image *image) {
  * Allocates memory for the given dimensions of a grayscale image
  * and returns a pointer to the grayscale_image structure
  */
-struct grayscale_image* create_grayscale_image(uint width, uint height) {
+struct grayscale_image* create_grayscale_image(uint width, uint height, uint scale) {
     // allocate for the structure
     struct grayscale_image* image = (struct grayscale_image*)malloc(sizeof(struct grayscale_image));
 
     // set the dimensions
     image->width = width;
     image->height = height;
+    image->scale = scale;
 
     // allocate a pointer to hold pointers to rows
     // and pointers for the rows themselves
@@ -77,7 +79,7 @@ void free_grayscale_image(struct grayscale_image *image) {
  * pixel in the grayscale image, that is, converts it to grayscale
  */
 struct grayscale_image* rgb_to_grayscale_image(struct rgb_image* image) {
-    struct grayscale_image* result = create_grayscale_image(image->width, image->height);
+    struct grayscale_image* result = create_grayscale_image(image->width, image->height, image->scale);
 
     for (uint y = 0; y < image->height; y++) {
         for (uint x = 0; x < image->width; x++) {
@@ -111,22 +113,8 @@ int read_header(FILE *stream, char* image_version, uint *width, uint *height, ui
 int get_netpbm_version(char* image_version) {
     if (strlen(image_version) < 2 || image_version[0] != 'P') return -1;
 
-    switch (image_version[1]) {
-        case '1':
-            return 1;
-        case '2':
-            return 2;
-        case '3':
-            return 3;
-        case '4':
-            return 4;
-        case '5':
-            return 5;
-        case '6':
-            return 6;
-        default:
-            return 0;
-    }
+    if (image_version[1] > '0' && image_version[1] < '7') return image_version[1] - '0';
+    else return 0;
 }
 
 /**
@@ -184,7 +172,7 @@ struct rgb_image* open_rgb_image(char *file_path) {
     if (image == NULL) return NULL;
 
     // the resulting image is going to be stored here
-    struct rgb_image* result = create_rgb_image(image->width, image->height);
+    struct rgb_image* result = create_rgb_image(image->width, image->height, image->scale);
 
     // handy struct for the parsed pixels
     struct rgb_color pixel;
@@ -229,7 +217,7 @@ struct grayscale_image* open_grayscale_image(char *file_path) {
     if (image == NULL) return NULL;
 
     // the resulting image is going to be stored here
-    struct grayscale_image* result = create_grayscale_image(image->width, image->height);
+    struct grayscale_image* result = create_grayscale_image(image->width, image->height, image->scale);
 
     // an unsigned integer for the grayscale value
     uint pixel;
@@ -253,15 +241,51 @@ struct grayscale_image* open_grayscale_image(char *file_path) {
 }
 
 /**
- *
+ * Uses existing rgb_image structure to save it to disk in the P3 format
  */
 int write_rgb_image(char *file_path, struct rgb_image *image) {
+    // open or create the file
+    FILE *stream = fopen(file_path, "w");
+    if (stream == NULL) {
+        printf("<netpbm>: could not open file for writing.\n");
+        return -1;
+    }
+
+    // write the header to file
+    fprintf(stream, "P3\n%u %u\n%u\n", image->width, image->height, image->scale);
+
+    // write all pixels down line by line
+    for (int y = 0; y < image->height; y++) {
+        for (int x = 0; x < image->width; x++) {
+            fprintf(stream, "%u %u %u ", image->matrix[y][x].r, image->matrix[y][x].g, image->matrix[y][x].b);
+        }
+        fprintf(stream, "\n");
+    }
+
     return 0;
 }
 
 /**
- *
+ * Uses existing grayscale_image structure to save it to disk in the P2 grayscale format
  */
 int write_grayscale_image(char *file_path, struct grayscale_image *image) {
+    // open or create the file
+    FILE *stream = fopen(file_path, "w");
+    if (stream == NULL) {
+        printf("<netpbm>: could not open file for writing.\n");
+        return -1;
+    }
+
+    // write the header to file
+    fprintf(stream, "P2\n%u %u\n%u\n", image->width, image->height, image->scale);
+
+    // write all pixels down line by line
+    for (int y = 0; y < image->height; y++) {
+        for (int x = 0; x < image->width; x++) {
+            fprintf(stream, "%u ", image->matrix[y][x]);
+        }
+        fprintf(stream, "\n");
+    }
+
     return 0;
 }

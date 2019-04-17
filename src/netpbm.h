@@ -22,7 +22,8 @@ struct rgb_color {
  */
 struct rgb_image {
     uint width;
-    uint height;    
+    uint height;
+    uint scale;
     struct rgb_color **matrix;
 };
 
@@ -32,7 +33,8 @@ struct rgb_image {
  */
 struct grayscale_image {
     uint width;
-    uint height;    
+    uint height;
+    uint scale;
     uint **matrix; // same as rgb, but no need for third level array, just a number
 };
 
@@ -47,8 +49,8 @@ struct image_file {
 /** FUNCTIONS */
 
 /* Creating and memory allocation */
-struct rgb_image* create_rgb_image(uint width, uint height);
-struct grayscale_image* create_grayscale_image(uint width, uint height);
+struct rgb_image* create_rgb_image(uint width, uint height, uint scale);
+struct grayscale_image* create_grayscale_image(uint width, uint height, uint scale);
 
 /* Image processing */
 struct grayscale_image* rgb_to_grayscale_image(struct rgb_image *image);

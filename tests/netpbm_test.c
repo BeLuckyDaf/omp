@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 void test_conversion() {
-    struct rgb_image* image = create_rgb_image(5, 5);
+    struct rgb_image* image = create_rgb_image(5, 5, 255);
     for (int y = 0; y < image->height; y++) {
         for (int x = 0; x < image->width; x++) {
             image->matrix[y][x] = (struct rgb_color) { .r=50, .g=0, .b=250 };
@@ -21,8 +21,13 @@ void test_file_parsing() {
     open_rgb_image("test.ppm");
 }
 
+void test_writing_rgb_file() {
+    struct rgb_image* image = open_rgb_image("test.ppm");
+    write_rgb_image("written.ppm", image);
+}
+
 int main() {
-    test_file_parsing();
+    test_writing_rgb_file();
 
     return 0;
 }
