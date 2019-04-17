@@ -1,4 +1,4 @@
-#include "../src/netpbm.h"
+#include "../src/sobel.h"
 #include <stdio.h>
 
 void test_conversion() {
@@ -32,8 +32,14 @@ void test_convert_rgb_to_grayscale_and_write() {
     write_grayscale_image("gray.ppm", gray);
 }
 
+void test_sobel() {
+    struct rgb_image* image = open_rgb_image("test256.ppm");
+    struct grayscale_image* sobel = sobel_filter_rgb(image);
+    write_grayscale_image("sobel.ppm", sobel);
+}
+
 int main() {
-    test_convert_rgb_to_grayscale_and_write();
+    test_sobel();
 
     return 0;
 }

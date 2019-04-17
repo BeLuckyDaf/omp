@@ -1,3 +1,6 @@
+#ifndef CODE_NETPBM_H
+#define CODE_NETPBM_H
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -69,3 +72,5 @@ int get_netpbm_version(char* image_version);
 /* Releasing memory */
 void free_rgb_image(struct rgb_image *image);
 void free_grayscale_image(struct grayscale_image *image);
+
+#endif // CODE_NETPBM_H

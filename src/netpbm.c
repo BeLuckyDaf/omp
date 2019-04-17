@@ -1,6 +1,5 @@
 #include "netpbm.h"
 
-
 /**
  * Allocates memory for the given dimensions of an RGB image
  * and returns a pointer to the rgb_image structure
