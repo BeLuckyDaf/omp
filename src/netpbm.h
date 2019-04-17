@@ -62,8 +62,9 @@ struct image_file* open_image_file(char* file_path, int expected_version);
 int write_rgb_image(char *file_path, struct rgb_image *image);
 int write_grayscale_image(char *file_path, struct grayscale_image *image);
 int read_header(FILE *stream, char* image_version, uint *width, uint *height, uint *scale);
-int get_netpbm_version(char* image_version);
 
+/* Miscellaneous */
+int get_netpbm_version(char* image_version);
 
 /* Releasing memory */
 void free_rgb_image(struct rgb_image *image);

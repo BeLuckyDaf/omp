@@ -22,12 +22,18 @@ void test_file_parsing() {
 }
 
 void test_writing_rgb_file() {
-    struct rgb_image* image = open_rgb_image("test.ppm");
+    struct rgb_image* image = open_rgb_image("test256.ppm");
     write_rgb_image("written.ppm", image);
 }
 
+void test_convert_rgb_to_grayscale_and_write() {
+    struct rgb_image* image = open_rgb_image("test.ppm");
+    struct grayscale_image* gray = rgb_to_grayscale_image(image);
+    write_grayscale_image("gray.ppm", gray);
+}
+
 int main() {
-    test_writing_rgb_file();
+    test_convert_rgb_to_grayscale_and_write();
 
     return 0;
 }

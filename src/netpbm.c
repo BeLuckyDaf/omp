@@ -267,6 +267,8 @@ int write_rgb_image(char *file_path, struct rgb_image *image) {
         fprintf(stream, "\n");
     }
 
+    printf("<netpbm>: successfully saved the image in P3 RGB format as \"%s\"\n", file_path);
+
     fclose(stream);
 
     return 0;
@@ -293,6 +295,8 @@ int write_grayscale_image(char *file_path, struct grayscale_image *image) {
         }
         fprintf(stream, "\n");
     }
+
+    printf("<netpbm>: successfully saved the image in P2 grayscale format as \"%s\"\n", file_path);
 
     fclose(stream);
 
