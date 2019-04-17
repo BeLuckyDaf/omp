@@ -132,6 +132,7 @@ struct image_file* open_image_file(char* file_path, int expected_version) {
 
     // reading the header
     if (read_header(stream, image_version, &width, &height, &scale) != 0) {
+        fclose(stream);
         return NULL; // failed reading header
     }
 
@@ -196,6 +197,8 @@ struct rgb_image* open_rgb_image(char *file_path) {
 
     printf("<netpbm>: successfully parsed the image.\n");
 
+    fclose(image->stream);
+
     return result;
 }
 
@@ -237,6 +240,8 @@ struct grayscale_image* open_grayscale_image(char *file_path) {
 
     printf("<netpbm>: successfully parsed the image.\n");
 
+    fclose(image->stream);
+
     return result;
 }
 
@@ -262,6 +267,8 @@ int write_rgb_image(char *file_path, struct rgb_image *image) {
         fprintf(stream, "\n");
     }
 
+    fclose(stream);
+
     return 0;
 }
 
@@ -286,6 +293,8 @@ int write_grayscale_image(char *file_path, struct grayscale_image *image) {
         }
         fprintf(stream, "\n");
     }
+
+    fclose(stream);
 
     return 0;
 }
