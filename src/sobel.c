@@ -85,6 +85,8 @@ struct grayscale_image* sobel_filter_grayscale(struct grayscale_image *image, in
     uint thread_count = image_size / step;
     pthread_t *thread_ids = (pthread_t*)calloc(thread_count, sizeof(pthread_t));
 
+    printf("<sobel>: launching threads...\n");
+
     for (uint s = 0; s < image_size; s += step) {
         struct sobel_thread_task *task = (struct sobel_thread_task*)malloc(sizeof(struct sobel_thread_task));
 
@@ -108,11 +110,14 @@ struct grayscale_image* sobel_filter_grayscale(struct grayscale_image *image, in
         pthread_create(&thread_ids[s / step], NULL, sobel_filter_grayscale_thread_job, (void*)task);
     }
 
+    printf("<sobel>: threads launched, working...\n");
+
     // wait for all threads to finish before continuing
     for (int i = 0; i < thread_count; i++) {
         pthread_join(thread_ids[i], NULL);
-        printf("<debug>: thread #%d has finished.\n", i);
     }
+
+    printf("<sobel>: all threads have finished.\n");
 
     return result;
 }

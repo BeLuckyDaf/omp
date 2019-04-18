@@ -3,6 +3,7 @@ BUILD_DIR := build
 SRCS := main.c netpbm.c sobel.c
 OBJS := $(addprefix $(BUILD_DIR)/,$(patsubst %.c,%.o,$(SRCS)))
 CLIBS := -pthread -lm
+CC := gcc
 
 .PHONY: program
 program: $(BUILD_DIR)/program
