@@ -152,7 +152,10 @@ struct image_file* open_image_file(char* file_path, int expected_version) {
 
     // opening the file
     FILE *stream = fopen(file_path, "r");
-    if (stream == NULL) return NULL;
+    if (stream == NULL) {
+        printf("<netpbm>: could not open image file.\n");
+        return NULL;
+    }
 
     // reading the header
     if (read_header(stream, image_version, &width, &height, &scale) != 0) {
