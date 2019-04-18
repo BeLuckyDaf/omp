@@ -3,6 +3,8 @@ project(Code C)
 
 set(CMAKE_C_STANDARD 11)
 
+find_package(Threads)
+
 include_directories(src)
 
 add_executable(Main
@@ -18,5 +20,5 @@ add_executable(Test
         src/sobel.h
         tests/netpbm_test.c)
 
-target_link_libraries(Test m)
-target_link_libraries(Main m)
+target_link_libraries(Test m ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(Main m ${CMAKE_THREAD_LIBS_INIT})

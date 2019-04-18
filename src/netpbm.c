@@ -188,9 +188,8 @@ struct rgb_image* open_rgb_image(char *file_path) {
                 return NULL;
             }
 
-            // TODO: remove debugging messages
+            // assign the color
             result->matrix[y][x] = (struct rgb_color) { .r = pixel.r, .g = pixel.g, .b = pixel.b };
-            printf("<debug>: matrix[%d][%d] = { %u %u %u }\n", y, x, result->matrix[y][x].r, result->matrix[y][x].g, result->matrix[y][x].b);
         }
     }
 

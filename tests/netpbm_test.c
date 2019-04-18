@@ -1,6 +1,8 @@
 #include "../src/sobel.h"
 #include <stdio.h>
 
+#include <sys/time.h>
+
 void test_conversion() {
     struct rgb_image* image = create_rgb_image(5, 5, 255);
     for (int y = 0; y < image->height; y++) {
@@ -33,9 +35,15 @@ void test_convert_rgb_to_grayscale_and_write() {
 }
 
 void test_sobel() {
-    struct rgb_image* image = open_rgb_image("test256.ppm");
-    struct grayscale_image* sobel = sobel_filter_rgb(image);
-    write_grayscale_image("sobel.ppm", sobel);
+    struct timeval start_time, stop_time;
+    gettimeofday(&start_time, NULL);
+    struct rgb_image* image = open_rgb_image("fullhd.ppm");
+    struct grayscale_image* sobel = sobel_filter_rgb_multithreaded(image, 6);
+    gettimeofday(&stop_time, NULL);
+
+    printf("Elapsed time: %f\n", (stop_time.tv_usec - start_time.tv_usec)/1000000.0);
+
+    write_grayscale_image("fullhd_sobel.ppm", sobel);
 }
 
 int main() {
