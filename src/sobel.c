@@ -119,6 +119,8 @@ struct grayscale_image* sobel_filter_grayscale(struct grayscale_image *image, in
 
     printf("<sobel>: all threads have finished.\n");
 
+    free(thread_ids);
+    
     return result;
 }
 

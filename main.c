@@ -58,6 +58,9 @@ int main(int argc, char **argv) {
         overall_time += (overall_stop_time.tv_usec - overall_start_time.tv_usec)/1000000.0;
     }
 
+    free_grayscale_image(sobel);
+    free_rgb_image(image);
+
     // print it all
     printf("-----------------------------------------\n\n");
     printf("<note>: sobel execution time: %f seconds.\n", sobel_time);

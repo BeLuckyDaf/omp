@@ -227,6 +227,7 @@ struct rgb_image* open_rgb_image(char *file_path) {
     printf("<netpbm>: successfully parsed the image.\n");
 
     fclose(image->stream);
+    free(image);
 
     return result;
 }
@@ -273,6 +274,7 @@ struct grayscale_image* open_grayscale_image(char *file_path) {
     printf("<netpbm>: successfully parsed the image.\n");
 
     fclose(image->stream);
+    free(image);
 
     return result;
 }
