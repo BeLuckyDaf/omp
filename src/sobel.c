@@ -2,6 +2,9 @@
 #include <math.h> // for the square root
 #include <pthread.h>
 
+/**
+ * Kernel matrices, required for the sobel operation.
+ */
 const int sobel_kernel_x[3][3] = {{-1, 0, 1},
                                   {-2, 0, 2},
                                   {-1, 0, 1}};
@@ -10,18 +13,6 @@ const int sobel_kernel_y[3][3] = {{-1, -2, -1},
                                   { 0,  0,  0},
                                   { 1,  2,  1}};
 
-/**
- * First convert rgb to grayscale, then call filter_grayscale to
- * perform the operation.
- */
-struct grayscale_image* sobel_filter_rgb(struct rgb_image* image) {
-    struct grayscale_image *gray = rgb_to_grayscale_image(image);
-    struct grayscale_image *result = sobel_filter_grayscale(gray);
-
-    free_grayscale_image(gray);
-
-    return result;
-}
 
 /**
  * Calculates horizontal and vertical magnitudes for the given pixel by
@@ -53,35 +44,27 @@ uint calculate_sobel_at(struct grayscale_image* image, int x, int y) {
 }
 
 /**
- * Creates another grayscale image, then applies sobel operation to the
- * provided image, saving the result into the newly created one.
+ * Converts the given RGB image to grayscale and call sobel_filter_grayscale_multithreaded
+ * with the given number of threads.
+ *
+ * Returns a pointer to the resulting image.
  */
-struct grayscale_image* sobel_filter_grayscale(struct grayscale_image* image) {
-    // the resulting image will be stored here
-    struct grayscale_image *result = create_grayscale_image(image->width, image->height, image->scale);
-
-    for (int y = 0; y < image->height; y++) {
-        for (int x = 0; x < image->width; x++) {
-            // get the sobel value for this pixel
-            result->matrix[y][x] = calculate_sobel_at(image, x, y);
-        }
-    }
-
-    return result;
-}
-
-
-struct grayscale_image* sobel_filter_rgb_multithreaded(struct rgb_image* image, int threads) {
+struct grayscale_image* sobel_filter_rgb(struct rgb_image *image, int threads) {
     struct grayscale_image *gray = rgb_to_grayscale_image(image);
-    struct grayscale_image *result = sobel_filter_grayscale_multithreaded(gray, threads);
+    struct grayscale_image *result = sobel_filter_grayscale(gray, threads);
 
     free_grayscale_image(gray);
 
     return result;
 }
 
-
-struct grayscale_image* sobel_filter_grayscale_multithreaded(struct grayscale_image* image, int threads) {
+/**
+ * Applies the sobel operator to the given grayscale image, dividing the
+ * work between the given number of threads.
+ *
+ * Returns a pointer to the resulting image.
+ */
+struct grayscale_image* sobel_filter_grayscale(struct grayscale_image *image, int threads) {
     if (threads < 1) {
         printf("<sobel>: number of threads cannot be less than one.\n");
         return NULL;
@@ -92,43 +75,61 @@ struct grayscale_image* sobel_filter_grayscale_multithreaded(struct grayscale_im
         return NULL;
     }
 
+    // create the resulting structure
     struct grayscale_image *result = create_grayscale_image(image->width, image->height, image->scale);
 
-    int image_size = image->width * image->height;
-    int step = image_size/threads;
+    // overall number of pixels and pixel step for the thread
+    uint image_size = image->width * image->height;
+    uint step = image_size/threads;
 
-    int thread_count = image_size / step;
+    uint thread_count = image_size / step;
     pthread_t *thread_ids = (pthread_t*)calloc(thread_count, sizeof(pthread_t));
 
-    for (int s = 0; s < image_size; s += step) {
+    for (uint s = 0; s < image_size; s += step) {
         struct sobel_thread_task *task = (struct sobel_thread_task*)malloc(sizeof(struct sobel_thread_task));
 
+        // set up the data for the upcoming thread
         task->source_image = image;
         task->destination_image = result;
+
+        // set the borders of calculation for this thread
         task->from.y = s / image->width;
         task->from.x = s % image->width;
         task->to.y = (s + step) / image->width;
         task->to.x = (s + step) % image->width;
 
+        // make sure not to exceed the bounds of the image
         if (task->to.y >= image->height) {
             task->to.y = image->height - 1;
             task->to.x = image->width - 1;
         }
 
+        // create the thread and add its id to the array of ids
         pthread_create(&thread_ids[s / step], NULL, sobel_filter_grayscale_thread_job, (void*)task);
     }
 
+    // wait for all threads to finish before continuing
     for (int i = 0; i < thread_count; i++) {
         pthread_join(thread_ids[i], NULL);
+        printf("<debug>: thread #%d has finished.\n", i);
     }
 
     return result;
 }
 
+/**
+ * A helper function for the multithreaded sobel filter. Calculates sobel
+ * in the specified region of the image.
+ *
+ * Returns NULL.
+ */
 void* sobel_filter_grayscale_thread_job(void *data) {
+    // converting void pointer to a data structure
     struct sobel_thread_task task = *((struct sobel_thread_task*) data);
 
-    for (int y = task.from.y; y < task.to.y; y++) {
+    // calculating sobel in the given region and saving the result
+    // into the image provided by the calling function
+    for (int y = task.from.y; y <= task.to.y; y++) {
         int x_from = y == task.from.y ? task.from.x : 0;
         int x_to = y == task.to.y ? task.to.x : task.source_image->width;
         for (int x = x_from; x < x_to; x++) {
@@ -137,6 +138,7 @@ void* sobel_filter_grayscale_thread_job(void *data) {
         }
     }
 
+    // free the memory since it was allocated specifically for this function call
     free(data);
 
     return NULL;

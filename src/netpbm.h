@@ -41,7 +41,9 @@ struct grayscale_image {
     uint **matrix; // same as rgb, but no need for third level array, just a number
 };
 
-
+/**
+ * A helper structure for File IO
+ */
 struct image_file {
     FILE *stream;
     uint width;

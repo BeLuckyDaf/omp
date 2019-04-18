@@ -91,15 +91,40 @@ struct grayscale_image* rgb_to_grayscale_image(struct rgb_image* image) {
 }
 
 /**
+ * Skips comments if they are present on the way to a number
+ */
+int skip_comment(FILE *stream) {
+    int c;
+    while ((((char)(c = fgetc(stream))) > '9' || c < '0') && c != EOF) {
+        if (c == '#') while(((char)(c = fgetc(stream))) != '\n' && c != EOF);
+        if (c == EOF) return EOF;
+    }
+    fseek(stream, -1, SEEK_CUR);
+    return 0;
+}
+
+/**
  * Reads the first 2 characters and 3 other unsigned integers, considering it the header
  * of an image file. Those are believed to be image version, width, height and scale.
  */
 int read_header(FILE *stream, char* image_version, uint *width, uint *height, uint *scale) {
-    int items_read = fscanf(stream, "%2s %u %u %u", image_version, width, height, scale);
+    int items_read = fscanf(stream, "%2s", image_version);
 
-    if (items_read < 4) {
-        printf("<netpbm>: could not parse file header, only read %d items out of 4.\n", items_read);
-        printf("<netpbm>: please, note that comments (lines starting with #) are not supported.\n");
+    skip_comment(stream);
+    if (fscanf(stream, "%u", width) < 1) {
+        printf("<netpbm>: could not read width.\n");
+        return -1;
+    }
+
+    skip_comment(stream);
+    if (fscanf(stream, "%u", height) < 1) {
+        printf("<netpbm>: could not read height.\n");
+        return -1;
+    }
+
+    skip_comment(stream);
+    if (fscanf(stream, "%u", scale) < 1) {
+        printf("<netpbm>: could not read scale.\n");
         return -1;
     }
 
@@ -140,7 +165,7 @@ struct image_file* open_image_file(char* file_path, int expected_version) {
 
     if (version == expected_version) {
         // fill the struct with the acquired data and send it back in
-        printf("<netpbm>: opened a file of format \"P%d\".\n", expected_version);
+        printf("<netpbm>: opened an image of format \"P%d\".\n", expected_version);
         struct image_file *result = (struct image_file*)malloc(sizeof(struct image_file));
         *result = (struct image_file) { .width = width, .height = height, .scale = scale, .stream = stream };
         return result;
@@ -167,6 +192,8 @@ struct image_file* open_image_file(char* file_path, int expected_version) {
  * Returns NULL in case of an error or a pointer to struct rgb_image.
  */
 struct rgb_image* open_rgb_image(char *file_path) {
+    printf("<netpbm>: opening the image at \"%s\".\n", file_path);
+
     // opening the file and reading the header
     struct image_file *image = open_image_file(file_path, 3);
     if (image == NULL) return NULL;
@@ -177,6 +204,8 @@ struct rgb_image* open_rgb_image(char *file_path) {
     // handy struct for the parsed pixels
     struct rgb_color pixel;
 
+    printf("<netpbm>: parsing the image...\n");
+
     // parsing width * height pixels
     int items_read;
     for (int y = 0; y < image->height; y++) {
@@ -184,7 +213,6 @@ struct rgb_image* open_rgb_image(char *file_path) {
             items_read = fscanf(image->stream, "%u %u %u", &pixel.r, &pixel.g, &pixel.b);
             if (items_read < 3) {
                 printf("<netpbm>: parsing error, incorrect format.\n");
-                printf("<netpbm>: please, note that comments (lines starting with #) are not supported.\n");
                 return NULL;
             }
 
@@ -213,6 +241,8 @@ struct rgb_image* open_rgb_image(char *file_path) {
  * Returns NULL in case of an error or a pointer to struct grayscale_image.
  */
 struct grayscale_image* open_grayscale_image(char *file_path) {
+    printf("<netpbm>: opening the image at \"%s\".\n", file_path);
+
     // opening the file and getting the header of it
     struct image_file *image = open_image_file(file_path, 2);
     if (image == NULL) return NULL;
@@ -223,6 +253,8 @@ struct grayscale_image* open_grayscale_image(char *file_path) {
     // an unsigned integer for the grayscale value
     uint pixel;
 
+    printf("<netpbm>: parsing the image...\n");
+
     // parsing width * height pixels
     int items_read;
     for (int y = 0; y < image->height; y++) {
@@ -230,7 +262,6 @@ struct grayscale_image* open_grayscale_image(char *file_path) {
             items_read = fscanf(image->stream, "%u", &pixel);
             if (items_read < 1) {
                 printf("<netpbm>: parsing error, incorrect format.\n");
-                printf("<netpbm>: please, note that comments (lines starting with #) are not supported.\n");
                 return NULL;
             }
         }
@@ -247,6 +278,8 @@ struct grayscale_image* open_grayscale_image(char *file_path) {
  * Uses existing rgb_image structure to save it to disk in the P3 format
  */
 int write_rgb_image(char *file_path, struct rgb_image *image) {
+    printf("<netpbm>: writing the image to disk...\n");
+
     // open or create the file
     FILE *stream = fopen(file_path, "w");
     if (stream == NULL) {
@@ -265,7 +298,7 @@ int write_rgb_image(char *file_path, struct rgb_image *image) {
         fprintf(stream, "\n");
     }
 
-    printf("<netpbm>: successfully saved the image in P3 RGB format as \"%s\"\n", file_path);
+    printf("<netpbm>: image written in P3 RGB format at \"%s\"\n", file_path);
 
     fclose(stream);
 
@@ -276,6 +309,8 @@ int write_rgb_image(char *file_path, struct rgb_image *image) {
  * Uses existing grayscale_image structure to save it to disk in the P2 grayscale format
  */
 int write_grayscale_image(char *file_path, struct grayscale_image *image) {
+    printf("<netpbm>: writing the image to disk...\n");
+
     // open or create the file
     FILE *stream = fopen(file_path, "w");
     if (stream == NULL) {
@@ -294,7 +329,7 @@ int write_grayscale_image(char *file_path, struct grayscale_image *image) {
         fprintf(stream, "\n");
     }
 
-    printf("<netpbm>: successfully saved the image in P2 grayscale format as \"%s\"\n", file_path);
+    printf("<netpbm>: image written in P2 grayscale format at \"%s\"\n", file_path);
 
     fclose(stream);
 

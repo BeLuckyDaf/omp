@@ -36,14 +36,23 @@ void test_convert_rgb_to_grayscale_and_write() {
 
 void test_sobel() {
     struct timeval start_time, stop_time;
+    struct rgb_image* image = open_rgb_image("16k.ppm");
+    printf("<debug>: started sobel...\n");
     gettimeofday(&start_time, NULL);
-    struct rgb_image* image = open_rgb_image("fullhd.ppm");
-    struct grayscale_image* sobel = sobel_filter_rgb_multithreaded(image, 6);
+    struct grayscale_image* sobel = sobel_filter_rgb(image, 32);
     gettimeofday(&stop_time, NULL);
+    printf("<debug>: finished sobel operation.\n");
 
-    printf("Elapsed time: %f\n", (stop_time.tv_usec - start_time.tv_usec)/1000000.0);
+    double elapsed = (stop_time.tv_sec - start_time.tv_sec);
+    if (stop_time.tv_usec < start_time.tv_usec) {
+        elapsed -= (start_time.tv_usec - stop_time.tv_usec)/1000000.0;
+    } else {
+        elapsed += (stop_time.tv_usec - start_time.tv_usec)/1000000.0;
+    }
 
-    write_grayscale_image("fullhd_sobel.ppm", sobel);
+    printf("Elapsed time: %f\n", elapsed);
+
+    write_grayscale_image("16k_sobel.ppm", sobel);
 }
 
 int main() {
