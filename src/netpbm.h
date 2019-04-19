@@ -1,5 +1,5 @@
-#ifndef CODE_NETPBM_H
-#define CODE_NETPBM_H
+#ifndef OMP_NETPBM_H
+#define OMP_NETPBM_H
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -110,4 +110,4 @@ void free_rgb_image(struct rgb_image *image);
 void free_grayscale_image(struct grayscale_image *image);
 void free_blackwhite_image(struct blackwhite_image *image);
 
-#endif // CODE_NETPBM_H
+#endif // OMP_NETPBM_H

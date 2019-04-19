@@ -1,5 +1,5 @@
-#ifndef CODE_SOBEL_H
-#define CODE_SOBEL_H
+#ifndef OMP_SOBEL_H
+#define OMP_SOBEL_H
 
 #include "netpbm.h" // we are going to need image structures
 
@@ -36,4 +36,4 @@ u_int32_t calculate_sobel_at(struct grayscale_image* image, int x, int y);
 struct grayscale_image* sobel_filter_grayscale(struct grayscale_image *image, int threads);
 struct grayscale_image* sobel_filter_rgb(struct rgb_image *image, int threads);
 
-#endif // CODE_SOBEL_H
+#endif // OMP_SOBEL_H

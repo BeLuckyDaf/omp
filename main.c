@@ -1,6 +1,7 @@
 #include "src/sobel.h"
 #include <stdio.h>
 #include <sys/time.h>
+#include "src/colors.h"
 
 int main(int argc, char **argv) {
     if (argc < 3) {
@@ -65,8 +66,8 @@ int main(int argc, char **argv) {
 
     // print it all
     printf("-----------------------------------------\n\n");
-    printf("<note>: sobel execution time: %f seconds.\n", sobel_time);
-    printf("<note>: overall program execution time: %f seconds.\n", overall_time);
+    printf("<note>: sobel execution time: %s%f%s seconds.\n", AC_GREEN, sobel_time, AC_RESET);
+    printf("<note>: overall program execution time: %s%f%s seconds.\n", AC_GREEN, overall_time, AC_RESET);
 
     return 0;
 }
