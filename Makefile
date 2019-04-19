@@ -5,8 +5,8 @@ OBJS := $(addprefix $(BUILD_DIR)/,$(patsubst %.c,%.o,$(SRCS)))
 CLIBS := -pthread -lm
 CC := gcc
 
-.PHONY: program
-program: $(BUILD_DIR)/program
+.PHONY: netpbm-sobel
+netpbm-sobel: $(BUILD_DIR)/netpbm-sobel
 
 .PRECIOUS: $(BUILD_DIR)/. $(BUILD_DIR)%/.
 
@@ -24,7 +24,7 @@ $(BUILD_DIR)/%.o: ./%.c | $$(@D)/.
 	$(CC) -c $< -o $@
 	
 # LINKING THE OBJECTS INTO AN EXECUTABLE
-$(BUILD_DIR)/program: $(OBJS)
+$(BUILD_DIR)/netpbm-sobel: $(OBJS)
 	$(CC) $(CLIBS) $^ -o $@
 
 clean:
