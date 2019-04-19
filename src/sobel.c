@@ -18,6 +18,8 @@ const int sobel_kernel_y[3][3] = {{-1, -2, -1},
  * Calculates horizontal and vertical magnitudes for the given pixel by
  * multiplying the corresponding matrices and then gets the square root of
  * the sum of squares to get the value.
+ *
+ * Returns the calculated sobel value.
  */
 uint calculate_sobel_at(struct grayscale_image* image, int x, int y) {
     // initialize variables
@@ -120,7 +122,7 @@ struct grayscale_image* sobel_filter_grayscale(struct grayscale_image *image, in
     printf("<sobel>: all threads have finished.\n");
 
     free(thread_ids);
-    
+
     return result;
 }
 

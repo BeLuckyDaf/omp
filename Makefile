@@ -10,20 +10,20 @@ program: $(BUILD_DIR)/program
 
 .PRECIOUS: $(BUILD_DIR)/. $(BUILD_DIR)%/.
 
+# CREATING THE BUILD DIRECTORY
 $(BUILD_DIR)/.:
 	mkdir -p $@
 
-$(BUILD_DIR)%/.:
-	mkdir -p $@
-
 .SECONDEXPANSION:
-
+	
+# COMPILING SOURCE FILES TO OBJECTS
 $(BUILD_DIR)/%.o: src/%.c | $$(@D)/.
 	$(CC) -c $< -o $@
 
 $(BUILD_DIR)/%.o: ./%.c | $$(@D)/.
 	$(CC) -c $< -o $@
-
+	
+# LINKING THE OBJECTS INTO AN EXECUTABLE
 $(BUILD_DIR)/program: $(OBJS)
 	$(CC) $(CLIBS) $^ -o $@
 

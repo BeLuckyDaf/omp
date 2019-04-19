@@ -46,6 +46,7 @@ struct grayscale_image {
  */
 struct image_file {
     FILE *stream;
+    int version;
     uint width;
     uint height;
     uint scale;
@@ -62,11 +63,18 @@ struct grayscale_image* rgb_to_grayscale_image(struct rgb_image *image);
 
 /* File IO */
 struct rgb_image* open_rgb_image(char *file_path);
+int parse_rgb_body_ascii(FILE *stream, struct rgb_image *image);
+int parse_rgb_body_binary(FILE *stream, struct rgb_image *image);
+
 struct grayscale_image* open_grayscale_image(char *file_path);
-struct image_file* open_image_file(char* file_path, int expected_version);
+int parse_grayscale_body_ascii(FILE *stream, struct grayscale_image *image);
+int parse_grayscale_body_binary(FILE *stream, struct grayscale_image *image);
+
+struct image_file* open_image_file(char* file_path);
 int write_rgb_image(char *file_path, struct rgb_image *image);
 int write_grayscale_image(char *file_path, struct grayscale_image *image);
 int read_header(FILE *stream, char* image_version, uint *width, uint *height, uint *scale);
+int skip_comment(FILE *stream);
 
 /* Miscellaneous */
 int get_netpbm_version(char* image_version);

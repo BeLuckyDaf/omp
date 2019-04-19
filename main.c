@@ -26,12 +26,14 @@ int main(int argc, char **argv) {
 
     // open the image
     struct rgb_image* image = open_rgb_image(source);
+    if (image == NULL) return -1;
 
     // set the sobel operation timer
     gettimeofday(&sobel_start_time, NULL);
 
     // perform the sobel operation
     struct grayscale_image* sobel = sobel_filter_rgb(image, threads);
+    if (sobel == NULL) return -1;
 
     // stop the sobel timer
     gettimeofday(&sobel_stop_time, NULL);
