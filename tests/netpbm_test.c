@@ -25,13 +25,13 @@ void test_file_parsing() {
 
 void test_writing_rgb_file() {
     struct rgb_image* image = open_rgb_image("test256.ppm");
-    write_rgb_image("written.ppm", image);
+    write_rgb_image("written.ppm", image, NETPBM_ASCII);
 }
 
 void test_convert_rgb_to_grayscale_and_write() {
     struct rgb_image* image = open_rgb_image("test.ppm");
     struct grayscale_image* gray = rgb_to_grayscale_image(image);
-    write_grayscale_image("gray.ppm", gray);
+    write_grayscale_image("gray.ppm", gray, NETPBM_ASCII);
 }
 
 void test_sobel() {
@@ -52,11 +52,16 @@ void test_sobel() {
 
     printf("Elapsed time: %f\n", elapsed);
 
-    write_grayscale_image("16k_sobel.ppm", sobel);
+    write_grayscale_image("16k_sobel.ppm", sobel, NETPBM_ASCII);
+}
+
+void test_blackwhite_file() {
+    struct grayscale_image* image = open_grayscale_image("sobel.ppm");
+    write_grayscale_image("written.ppm", image, NETPBM_ASCII);
 }
 
 int main() {
-    test_sobel();
+    test_blackwhite_file();
 
     return 0;
 }

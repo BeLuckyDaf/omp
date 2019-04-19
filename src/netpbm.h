@@ -5,9 +5,19 @@
 #include <stdio.h>
 #include <string.h>
 
-/** TYPES */
+/** DEFINES */
 
-typedef unsigned int uint;
+#define NETPBM_BLACKWHITE_ASCII 1
+#define NETPBM_GRAYSCALE_ASCII 2
+#define NETPBM_RGB_ASCII 3
+#define NETPBM_BLACKWHITE_BINARY 4
+#define NETPBM_GRAYSCALE_BINARY 5
+#define NETPBM_RGB_BINARY 6
+
+#define NETPBM_ASCII 1
+#define NETPBM_BINARY 2
+
+/** TYPES */
 
 /** STRUCTURES */
 
@@ -15,7 +25,7 @@ typedef unsigned int uint;
  * Contains RGB data for a single pixel
  */
 struct rgb_color {
-    uint r, g, b;
+    u_int32_t r, g, b;
 };
 
 /**
@@ -24,21 +34,31 @@ struct rgb_color {
  * color channel values
  */
 struct rgb_image {
-    uint width;
-    uint height;
-    uint scale;
+    u_int32_t width;
+    u_int32_t height;
+    u_int32_t scale;
     struct rgb_color **matrix;
 };
 
 /**
- * Contains data about an RGB image in a 2D matrix, where an element
+ * Contains data about a grayscale image in a 2D matrix, where an element
  * of the matrix is a grayscale value
  */
 struct grayscale_image {
-    uint width;
-    uint height;
-    uint scale;
-    uint **matrix; // same as rgb, but no need for third level array, just a number
+    u_int32_t width;
+    u_int32_t height;
+    u_int32_t scale;
+    u_int32_t **matrix; // same as rgb, but no need for third level array, just a number
+};
+
+/**
+ * Contains data about a black and white image in a 2D matrix, where an element
+ * of the matrix is a 1 or a 0
+ */
+struct blackwhite_image {
+    u_int32_t width;
+    u_int32_t height;
+    u_int8_t **matrix; // it is just 0 or 1, so one byte is enough
 };
 
 /**
@@ -47,16 +67,17 @@ struct grayscale_image {
 struct image_file {
     FILE *stream;
     int version;
-    uint width;
-    uint height;
-    uint scale;
+    u_int32_t width;
+    u_int32_t height;
+    u_int32_t scale;
 };
 
 /** FUNCTIONS */
 
 /* Creating and memory allocation */
-struct rgb_image* create_rgb_image(uint width, uint height, uint scale);
-struct grayscale_image* create_grayscale_image(uint width, uint height, uint scale);
+struct rgb_image* create_rgb_image(u_int32_t width, u_int32_t height, u_int32_t scale);
+struct grayscale_image* create_grayscale_image(u_int32_t width, u_int32_t height, u_int32_t scale);
+struct blackwhite_image* create_blackwhite_image(u_int32_t width, u_int32_t height);
 
 /* Image processing */
 struct grayscale_image* rgb_to_grayscale_image(struct rgb_image *image);
@@ -70,10 +91,15 @@ struct grayscale_image* open_grayscale_image(char *file_path);
 int parse_grayscale_body_ascii(FILE *stream, struct grayscale_image *image);
 int parse_grayscale_body_binary(FILE *stream, struct grayscale_image *image);
 
+struct blackwhite_image* open_blackwhite_image(char *file_path);
+int parse_blackwhite_body_ascii(FILE *stream, struct blackwhite_image *image);
+int parse_blackwhite_body_binary(FILE *stream, struct blackwhite_image *image);
+
 struct image_file* open_image_file(char* file_path);
-int write_rgb_image(char *file_path, struct rgb_image *image);
-int write_grayscale_image(char *file_path, struct grayscale_image *image);
-int read_header(FILE *stream, char* image_version, uint *width, uint *height, uint *scale);
+int write_rgb_image(char *file_path, struct rgb_image *image, int format);
+int write_grayscale_image(char *file_path, struct grayscale_image *image, int format);
+int write_blackwhite_image(char *file_path, struct blackwhite_image *image, int format);
+int read_header(FILE *stream, int *version, u_int32_t *width, u_int32_t *height, u_int32_t *scale);
 int skip_comment(FILE *stream);
 
 /* Miscellaneous */
@@ -82,5 +108,6 @@ int get_netpbm_version(char* image_version);
 /* Releasing memory */
 void free_rgb_image(struct rgb_image *image);
 void free_grayscale_image(struct grayscale_image *image);
+void free_blackwhite_image(struct blackwhite_image *image);
 
 #endif // CODE_NETPBM_H

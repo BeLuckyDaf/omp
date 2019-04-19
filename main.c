@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
     gettimeofday(&sobel_stop_time, NULL);
 
     // write sobel image to disk
-    write_grayscale_image(target, sobel);
+    write_grayscale_image(target, sobel, NETPBM_ASCII);
 
     // stop the overall timer
     gettimeofday(&overall_stop_time, NULL);

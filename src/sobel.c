@@ -21,10 +21,10 @@ const int sobel_kernel_y[3][3] = {{-1, -2, -1},
  *
  * Returns the calculated sobel value.
  */
-uint calculate_sobel_at(struct grayscale_image* image, int x, int y) {
+u_int32_t calculate_sobel_at(struct grayscale_image* image, int x, int y) {
     // initialize variables
-    uint mag_x = 0;
-    uint mag_y = 0;
+    u_int32_t mag_x = 0;
+    u_int32_t mag_y = 0;
 
     // matrix multiplication here
     for (int a = 0; a < 3; a++) {
@@ -42,7 +42,7 @@ uint calculate_sobel_at(struct grayscale_image* image, int x, int y) {
     }
 
     // get the result
-    return (uint) fmin(sqrt(mag_x * mag_x + mag_y * mag_y), image->scale);
+    return (u_int32_t) fmin(sqrt(mag_x * mag_x + mag_y * mag_y), image->scale);
 }
 
 /**
@@ -81,15 +81,15 @@ struct grayscale_image* sobel_filter_grayscale(struct grayscale_image *image, in
     struct grayscale_image *result = create_grayscale_image(image->width, image->height, image->scale);
 
     // overall number of pixels and pixel step for the thread
-    uint image_size = image->width * image->height;
-    uint step = image_size/threads;
+    u_int32_t image_size = image->width * image->height;
+    u_int32_t step = image_size/threads;
 
-    uint thread_count = image_size / step;
+    u_int32_t thread_count = image_size / step;
     pthread_t *thread_ids = (pthread_t*)calloc(thread_count, sizeof(pthread_t));
 
     printf("<sobel>: launching threads...\n");
 
-    for (uint s = 0; s < image_size; s += step) {
+    for (u_int32_t s = 0; s < image_size; s += step) {
         struct sobel_thread_task *task = (struct sobel_thread_task*)malloc(sizeof(struct sobel_thread_task));
 
         // set up the data for the upcoming thread

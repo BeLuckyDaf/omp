@@ -9,7 +9,7 @@
  * A helper structure for holding position
  */
 struct pixel_position {
-    uint x, y;
+    u_int32_t x, y;
 };
 
 /**
@@ -30,7 +30,7 @@ extern const int sobel_kernel_y[3][3];
 
 /* Helpers */
 void* sobel_filter_grayscale_thread_job(void *data);
-uint calculate_sobel_at(struct grayscale_image* image, int x, int y);
+u_int32_t calculate_sobel_at(struct grayscale_image* image, int x, int y);
 
 /* Sobel operation */
 struct grayscale_image* sobel_filter_grayscale(struct grayscale_image *image, int threads);
