@@ -9,7 +9,7 @@
  * A helper structure for holding position
  */
 struct pixel_position {
-    u_int32_t x, y;
+	u_int32_t x, y;
 };
 
 /**
@@ -17,8 +17,8 @@ struct pixel_position {
  * the multithreaded sobel operation.
  */
 struct sobel_thread_task {
-    struct grayscale_image *source_image, *destination_image;
-    struct pixel_position from, to;
+	struct grayscale_image *source_image, *destination_image;
+	struct pixel_position from, to;
 };
 
 /** CONSTANTS */

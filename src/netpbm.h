@@ -25,7 +25,7 @@
  * Contains RGB data for a single pixel
  */
 struct rgb_color {
-    u_int32_t r, g, b;
+	u_int32_t r, g, b;
 };
 
 /**
@@ -34,10 +34,10 @@ struct rgb_color {
  * color channel values
  */
 struct rgb_image {
-    u_int32_t width;
-    u_int32_t height;
-    u_int32_t scale;
-    struct rgb_color **matrix;
+	u_int32_t width;
+	u_int32_t height;
+	u_int32_t scale;
+	struct rgb_color **matrix;
 };
 
 /**
@@ -45,10 +45,10 @@ struct rgb_image {
  * of the matrix is a grayscale value
  */
 struct grayscale_image {
-    u_int32_t width;
-    u_int32_t height;
-    u_int32_t scale;
-    u_int32_t **matrix; // same as rgb, but no need for third level array, just a number
+	u_int32_t width;
+	u_int32_t height;
+	u_int32_t scale;
+	u_int32_t **matrix; // same as rgb, but no need for third level array, just a number
 };
 
 /**
@@ -56,20 +56,20 @@ struct grayscale_image {
  * of the matrix is a 1 or a 0
  */
 struct blackwhite_image {
-    u_int32_t width;
-    u_int32_t height;
-    u_int8_t **matrix; // it is just 0 or 1, so one byte is enough
+	u_int32_t width;
+	u_int32_t height;
+	u_int8_t **matrix; // it is just 0 or 1, so one byte is enough
 };
 
 /**
  * A helper structure for File IO
  */
 struct image_file {
-    FILE *stream;
-    int version;
-    u_int32_t width;
-    u_int32_t height;
-    u_int32_t scale;
+	FILE *stream;
+	int version;
+	u_int32_t width;
+	u_int32_t height;
+	u_int32_t scale;
 };
 
 /** FUNCTIONS */
