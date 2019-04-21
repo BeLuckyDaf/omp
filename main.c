@@ -3,6 +3,17 @@
 #include <sys/time.h>
 #include "src/colors.h"
 
+double get_timestamp(struct timeval from, struct timeval to) {
+    double timestamp = (to.tv_sec - from.tv_sec);
+    if (to.tv_usec < from.tv_usec) {
+        timestamp -= (from.tv_usec - to.tv_usec)/1000000.0;
+    } else {
+        timestamp += (to.tv_usec - from.tv_usec)/1000000.0;
+    }
+
+    return timestamp;
+}
+
 int main(int argc, char **argv) {
 	if (argc < 3) {
 		printf("Usage: <source path> <target path> <# of threads>\n");
@@ -46,20 +57,10 @@ int main(int argc, char **argv) {
 	gettimeofday(&overall_stop_time, NULL);
 
 	// calculate how much time the sobel operation has taken
-	double sobel_time = (sobel_stop_time.tv_sec - sobel_start_time.tv_sec);
-	if (sobel_stop_time.tv_usec < sobel_start_time.tv_usec) {
-		sobel_time -= (sobel_start_time.tv_usec - sobel_stop_time.tv_usec)/1000000.0;
-	} else {
-		sobel_time += (sobel_stop_time.tv_usec - sobel_start_time.tv_usec)/1000000.0;
-	}
+	double sobel_time = get_timestamp(sobel_start_time, sobel_stop_time);
 
 	// calculate how much time the program has taken overall
-	double overall_time = (overall_stop_time.tv_sec - overall_start_time.tv_sec);
-	if (overall_stop_time.tv_usec < overall_start_time.tv_usec) {
-		overall_time -= (overall_start_time.tv_usec - overall_stop_time.tv_usec)/1000000.0;
-	} else {
-		overall_time += (overall_stop_time.tv_usec - overall_start_time.tv_usec)/1000000.0;
-	}
+	double overall_time = get_timestamp(overall_start_time, overall_stop_time);
 
 	free_grayscale_image(sobel);
 	free_rgb_image(image);
