@@ -2,26 +2,26 @@
 #include <math.h> // for the square root
 #include <pthread.h>
 
-/**
+/*
  * Kernel matrices, required for the sobel operation.
  */
-const int sobel_kernel_x[3][3] =	{{-1, 0, 1},
-					{ -2, 0, 2},
-					{ -1, 0, 1}};
+const int sobel_kernel_x[3][3] = {{-1, 0, 1},
+                                  {-2, 0, 2},
+                                  {-1, 0, 1}};
 
-const int sobel_kernel_y[3][3] = 	{{-1, -2, -1},
-					{  0,  0,  0},
-					{  1,  2,  1}};
+const int sobel_kernel_y[3][3] = {{-1, -2, -1},
+                                  {0,  0,  0},
+                                  {1,  2,  1}};
 
 
-/**
+/*
  * Calculates horizontal and vertical magnitudes for the given pixel by
  * multiplying the corresponding matrices and then gets the square root of
  * the sum of squares to get the value.
  *
  * Returns the calculated sobel value.
  */
-u_int32_t calculate_sobel_at(struct grayscale_image* image, int x, int y) {
+u_int32_t calculate_sobel_at(struct grayscale_image *image, int x, int y) {
 	// initialize variables
 	u_int32_t mag_x = 0;
 	u_int32_t mag_y = 0;
@@ -45,13 +45,13 @@ u_int32_t calculate_sobel_at(struct grayscale_image* image, int x, int y) {
 	return (u_int32_t) fmin(sqrt(mag_x * mag_x + mag_y * mag_y), image->scale);
 }
 
-/**
+/*
  * Converts the given RGB image to grayscale and call sobel_filter_grayscale_multithreaded
  * with the given number of threads.
  *
  * Returns a pointer to the resulting image.
  */
-struct grayscale_image* sobel_filter_rgb(struct rgb_image *image, int threads) {
+struct grayscale_image *sobel_filter_rgb(struct rgb_image *image, int threads) {
 	struct grayscale_image *gray = rgb_to_grayscale_image(image);
 	struct grayscale_image *result = sobel_filter_grayscale(gray, threads);
 
@@ -60,13 +60,13 @@ struct grayscale_image* sobel_filter_rgb(struct rgb_image *image, int threads) {
 	return result;
 }
 
-/**
+/*
  * Applies the sobel operator to the given grayscale image, dividing the
  * work between the given number of threads.
  *
  * Returns a pointer to the resulting image.
  */
-struct grayscale_image* sobel_filter_grayscale(struct grayscale_image *image, int threads) {
+struct grayscale_image *sobel_filter_grayscale(struct grayscale_image *image, int threads) {
 	if (threads < 1) {
 		printf("<sobel>: number of threads cannot be less than one.\n");
 		return NULL;
@@ -82,15 +82,15 @@ struct grayscale_image* sobel_filter_grayscale(struct grayscale_image *image, in
 
 	// overall number of pixels and pixel step for the thread
 	u_int32_t image_size = image->width * image->height;
-	u_int32_t step = image_size/threads;
+	u_int32_t step = image_size / threads;
 
 	u_int32_t thread_count = image_size / step;
-	pthread_t *thread_ids = (pthread_t*)calloc(thread_count, sizeof(pthread_t));
+	pthread_t *thread_ids = (pthread_t *) calloc(thread_count, sizeof(pthread_t));
 
 	printf("<sobel>: launching threads...\n");
 
 	for (u_int32_t s = 0; s < image_size; s += step) {
-		struct sobel_thread_task *task = (struct sobel_thread_task*)malloc(sizeof(struct sobel_thread_task));
+		struct sobel_thread_task *task = (struct sobel_thread_task *) malloc(sizeof(struct sobel_thread_task));
 
 		// set up the data for the upcoming thread
 		task->source_image = image;
@@ -109,7 +109,7 @@ struct grayscale_image* sobel_filter_grayscale(struct grayscale_image *image, in
 		}
 
 		// create the thread and add its id to the array of ids
-		pthread_create(&thread_ids[s / step], NULL, _sobel_filter_grayscale_thread_job, (void*)task);
+		pthread_create(&thread_ids[s / step], NULL, _sobel_filter_grayscale_thread_job, (void *) task);
 	}
 
 	printf("<sobel>: threads launched, working...\n");
@@ -126,15 +126,15 @@ struct grayscale_image* sobel_filter_grayscale(struct grayscale_image *image, in
 	return result;
 }
 
-/**
+/*
  * A helper function for the multithreaded sobel filter. Calculates sobel
  * in the specified region of the image.
  *
  * Returns NULL.
  */
-void* _sobel_filter_grayscale_thread_job(void *data) {
+void *_sobel_filter_grayscale_thread_job(void *data) {
 	// converting void pointer to a data structure
-	struct sobel_thread_task task = *((struct sobel_thread_task*) data);
+	struct sobel_thread_task task = *((struct sobel_thread_task *) data);
 
 	// calculating sobel in the given region and saving the result
 	// into the image provided by the calling function

@@ -1,13 +1,13 @@
 #include "netpbm.h"
 
-/**
+/*
  * Allocates memory for the given dimensions of an RGB image.
  *
  * Returns a pointer to the rgb_image structure.
  */
-struct rgb_image* create_rgb_image(u_int32_t width, u_int32_t height, u_int32_t scale) {
+struct rgb_image *create_rgb_image(u_int32_t width, u_int32_t height, u_int32_t scale) {
 	// allocate for the structure
-	struct rgb_image* image = (struct rgb_image*)malloc(sizeof(struct rgb_image));
+	struct rgb_image *image = (struct rgb_image *) malloc(sizeof(struct rgb_image));
 
 	// set the dimensions
 	image->width = width;
@@ -16,15 +16,15 @@ struct rgb_image* create_rgb_image(u_int32_t width, u_int32_t height, u_int32_t 
 
 	// allocate a pointer to hold pointers to rows
 	// and pointers for the rows themselves
-	image->matrix = (struct rgb_color**)calloc(height, sizeof(struct rgb_color*));
+	image->matrix = (struct rgb_color **) calloc(height, sizeof(struct rgb_color *));
 	for (int i = 0; i < height; i++) {
-		image->matrix[i] = (struct rgb_color*)calloc(width, sizeof(struct rgb_color));
+		image->matrix[i] = (struct rgb_color *) calloc(width, sizeof(struct rgb_color));
 	}
 
 	return image;
 }
 
-/**
+/*
  * Completely frees the allocated memory for the RGB image structure
  */
 void free_rgb_image(struct rgb_image *image) {
@@ -37,14 +37,14 @@ void free_rgb_image(struct rgb_image *image) {
 	free(image);
 }
 
-/**
+/*
  * Allocates memory for the given dimensions of a grayscale image.
  *
  * Returns a pointer to the grayscale_image structure.
  */
-struct grayscale_image* create_grayscale_image(u_int32_t width, u_int32_t height, u_int32_t scale) {
+struct grayscale_image *create_grayscale_image(u_int32_t width, u_int32_t height, u_int32_t scale) {
 	// allocate for the structure
-	struct grayscale_image* image = (struct grayscale_image*)malloc(sizeof(struct grayscale_image));
+	struct grayscale_image *image = (struct grayscale_image *) malloc(sizeof(struct grayscale_image));
 
 	// set the dimensions
 	image->width = width;
@@ -53,15 +53,15 @@ struct grayscale_image* create_grayscale_image(u_int32_t width, u_int32_t height
 
 	// allocate a pointer to hold pointers to rows
 	// and pointers for the rows themselves
-	image->matrix = (u_int32_t**)calloc(height, sizeof(u_int32_t*));
+	image->matrix = (u_int32_t **) calloc(height, sizeof(u_int32_t * ));
 	for (int i = 0; i < height; i++) {
-		image->matrix[i] = (u_int32_t*)calloc(width, sizeof(u_int32_t));
+		image->matrix[i] = (u_int32_t *) calloc(width, sizeof(u_int32_t));
 	}
 
 	return image;
 }
 
-/**
+/*
  * Completely frees the allocated memory for the grayscale image structure
  */
 void free_grayscale_image(struct grayscale_image *image) {
@@ -74,14 +74,14 @@ void free_grayscale_image(struct grayscale_image *image) {
 	free(image);
 }
 
-/**
+/*
 * Allocates memory for the given dimensions of a grayscale image.
 *
 * Returns a pointer to the blackwhite_image structure.
 */
-struct blackwhite_image* create_blackwhite_image(u_int32_t width, u_int32_t height) {
+struct blackwhite_image *create_blackwhite_image(u_int32_t width, u_int32_t height) {
 	// allocate for the structure
-	struct blackwhite_image* image = (struct blackwhite_image*)malloc(sizeof(struct blackwhite_image));
+	struct blackwhite_image *image = (struct blackwhite_image *) malloc(sizeof(struct blackwhite_image));
 
 	// set the dimensions
 	image->width = width;
@@ -89,15 +89,15 @@ struct blackwhite_image* create_blackwhite_image(u_int32_t width, u_int32_t heig
 
 	// allocate a pointer to hold pointers to rows
 	// and pointers for the rows themselves
-	image->matrix = (u_int8_t**)calloc(height, sizeof(u_int8_t*));
+	image->matrix = (u_int8_t **) calloc(height, sizeof(u_int8_t * ));
 	for (int i = 0; i < height; i++) {
-		image->matrix[i] = (u_int8_t*)calloc(width, sizeof(u_int8_t));
+		image->matrix[i] = (u_int8_t *) calloc(width, sizeof(u_int8_t));
 	}
 
 	return image;
 }
 
-/**
+/*
  * Completely frees the allocated memory for the black and white image structure
  */
 void free_blackwhite_image(struct blackwhite_image *image) {
@@ -110,19 +110,19 @@ void free_blackwhite_image(struct blackwhite_image *image) {
 	free(image);
 }
 
-/**
+/*
  * Creates a new grayscale image and then finds average color
  * for each pixel in the colored image, assigns it to the corresponding
  * pixel in the grayscale image, that is, converts it to grayscale
  *
  * Returns a pointer to the resulting grayscale_image structure.
  */
-struct grayscale_image* rgb_to_grayscale_image(struct rgb_image* image) {
-	struct grayscale_image* result = create_grayscale_image(image->width, image->height, image->scale);
+struct grayscale_image *rgb_to_grayscale_image(struct rgb_image *image) {
+	struct grayscale_image *result = create_grayscale_image(image->width, image->height, image->scale);
 
 	for (u_int32_t y = 0; y < image->height; y++) {
 		for (u_int32_t x = 0; x < image->width; x++) {
-			u_int32_t average = (image->matrix[y][x].r + image->matrix[y][x].g + image->matrix[y][x].b)/3;
+			u_int32_t average = (image->matrix[y][x].r + image->matrix[y][x].g + image->matrix[y][x].b) / 3;
 			result->matrix[y][x] = average;
 		}
 	}
@@ -130,22 +130,22 @@ struct grayscale_image* rgb_to_grayscale_image(struct rgb_image* image) {
 	return result;
 }
 
-/**
+/*
  * Skips comments if they are present on the way to a number
  *
  * Returns EOF if end-of-file is reached, otherwise returns 0.
  */
 static int _skip_comment(FILE *stream) {
 	int c;
-	while ((((char)(c = fgetc(stream))) > '9' || c < '0') && c != EOF) {
-		if (c == '#') while(((char)(c = fgetc(stream))) != '\n' && c != EOF);
+	while ((((char) (c = fgetc(stream))) > '9' || c < '0') && c != EOF) {
+		if (c == '#') while (((char) (c = fgetc(stream))) != '\n' && c != EOF);
 		if (c == EOF) return EOF;
 	}
 	fseek(stream, -1, SEEK_CUR);
 	return 0;
 }
 
-/**
+/*
  * Reads the first 2 characters and 3 other unsigned integers, considering it the header
  * of an image file. Those are believed to be image version, width, height and scale.
  *
@@ -188,7 +188,7 @@ static int _read_header(FILE *stream, int *version, u_int32_t *width, u_int32_t 
 	return 0;
 }
 
-/**
+/*
  * Checks the type of the image in a very straight-forward way
  *
  * Returns -1 if format is incorrect, 0 if invalid version is specified,
@@ -201,14 +201,14 @@ static int _get_netpbm_version(char *image_version) {
 	else return 0;
 }
 
-/**
+/*
  * Creates a file stream and reads the header of the image.
  * Used not to repeat the same code in the image opening functions.
  *
  * Returns NULL if error occurred, otherwise a pointer to the image_file
  * structure is returned.
  */
-struct image_file* open_image_file(char* file_path) {
+struct image_file *open_image_file(char *file_path) {
 	// defining variables we'll need
 	char image_version[3];
 	u_int32_t width, height, scale;
@@ -229,18 +229,18 @@ struct image_file* open_image_file(char* file_path) {
 
 	// fill the struct with the acquired data and send it back in
 	printf("<netpbm>: opened an image of format \"P%d\".\n", version);
-	struct image_file *result = (struct image_file*)malloc(sizeof(struct image_file));
-	*result = (struct image_file) { .width = width,
-					.height = height,
-					.scale = scale,
-					.stream = stream,
-					.version = version };
+	struct image_file *result = (struct image_file *) malloc(sizeof(struct image_file));
+	*result = (struct image_file) {.width = width,
+		.height = height,
+		.scale = scale,
+		.stream = stream,
+		.version = version};
 
 	// return the structure
 	return result;
 }
 
-/**
+/*
  * Tries to open the file that contains the image,
  * then reads the header, which should consist of the image type (we expect P3 or P6),
  * width, height, both in pixels, and the color scale.
@@ -251,7 +251,7 @@ struct image_file* open_image_file(char* file_path) {
  *
  * Returns NULL in case of an error or a pointer to struct rgb_image.
  */
-struct rgb_image* open_rgb_image(char *file_path) {
+struct rgb_image *open_rgb_image(char *file_path) {
 	printf("<netpbm>: opening the image at \"%s\".\n", file_path);
 
 	// opening the file and reading the header
@@ -259,13 +259,13 @@ struct rgb_image* open_rgb_image(char *file_path) {
 	if (image == NULL) return NULL;
 
 	// the resulting image is going to be stored here
-	struct rgb_image* result = create_rgb_image(image->width, image->height, image->scale);
+	struct rgb_image *result = create_rgb_image(image->width, image->height, image->scale);
 
 	printf("<netpbm>: parsing the image...\n");
 
 	// parsing the image according to the specified type
 	int parse_result;
-	switch(image->version) {
+	switch (image->version) {
 		case NETPBM_RGB_ASCII:
 			parse_result = _parse_rgb_body_ascii(image->stream, result);
 			break;
@@ -287,7 +287,7 @@ struct rgb_image* open_rgb_image(char *file_path) {
 	return result;
 }
 
-/**
+/*
  * Reading RGB pixels represented as ASCII text from the image file.
  *
  * Returns -1 if error occurred, otherwise returns 0.
@@ -307,14 +307,14 @@ static int _parse_rgb_body_ascii(FILE *stream, struct rgb_image *image) {
 			}
 
 			// assign the color
-			image->matrix[y][x] = (struct rgb_color) { .r = pixel.r, .g = pixel.g, .b = pixel.b };
+			image->matrix[y][x] = (struct rgb_color) {.r = pixel.r, .g = pixel.g, .b = pixel.b};
 		}
 	}
 
 	return 0;
 }
 
-/**
+/*
  * Reading RGB pixels represented as bytes from the image file.
  *
  * Returns -1 if error occurred, otherwise returns 0.
@@ -335,16 +335,16 @@ static int _parse_rgb_body_binary(FILE *stream, struct rgb_image *image) {
 
 			// assign the color
 			image->matrix[y][x] = (struct rgb_color) {
-				.r = (u_int32_t)rgb[0],
-				.g = (u_int32_t)rgb[1],
-				.b = (u_int32_t)rgb[2]};
+				.r = (u_int32_t) rgb[0],
+				.g = (u_int32_t) rgb[1],
+				.b = (u_int32_t) rgb[2]};
 		}
 	}
 
 	return 0;
 }
 
-/**
+/*
  * Tries to open the file that contains the image,
  * then reads the header, which should consist of the image type (we expect P2 or P5),
  * width, height, both in pixels, and the color scale.
@@ -356,7 +356,7 @@ static int _parse_rgb_body_binary(FILE *stream, struct rgb_image *image) {
  *
  * Returns NULL in case of an error or a pointer to struct grayscale_image.
  */
-struct grayscale_image* open_grayscale_image(char *file_path) {
+struct grayscale_image *open_grayscale_image(char *file_path) {
 	printf("<netpbm>: opening the image at \"%s\".\n", file_path);
 
 	// opening the file and getting the header of it
@@ -364,13 +364,13 @@ struct grayscale_image* open_grayscale_image(char *file_path) {
 	if (image == NULL) return NULL;
 
 	// the resulting image is going to be stored here
-	struct grayscale_image* result = create_grayscale_image(image->width, image->height, image->scale);
+	struct grayscale_image *result = create_grayscale_image(image->width, image->height, image->scale);
 
 	printf("<netpbm>: parsing the image...\n");
 
 	// parsing the image according to the specified type
 	int parse_result;
-	switch(image->version) {
+	switch (image->version) {
 		case NETPBM_GRAYSCALE_ASCII:
 			parse_result = _parse_grayscale_body_ascii(image->stream, result);
 			break;
@@ -392,7 +392,7 @@ struct grayscale_image* open_grayscale_image(char *file_path) {
 	return result;
 }
 
-/**
+/*
  * Reading grayscale pixels represented as ASCII text from the image file.
  *
  * Returns -1 if error occurred, otherwise returns 0.
@@ -419,7 +419,7 @@ static int _parse_grayscale_body_ascii(FILE *stream, struct grayscale_image *ima
 	return 0;
 }
 
-/**
+/*
  * Reading grayscale pixels represented as bytes from the image file.
  *
  * Returns -1 if error occurred, otherwise returns 0.
@@ -446,7 +446,7 @@ static int _parse_grayscale_body_binary(FILE *stream, struct grayscale_image *im
 	return 0;
 }
 
-/**
+/*
  * Tries to open the file that contains the image,
  * then reads the header, which should consist of the image type (we expect P1 or P4),
  * width, height, both in pixels.
@@ -458,7 +458,7 @@ static int _parse_grayscale_body_binary(FILE *stream, struct grayscale_image *im
  *
  * Returns NULL in case of an error or a pointer to struct blackwhite_image.
  */
-struct blackwhite_image* open_blackwhite_image(char *file_path) {
+struct blackwhite_image *open_blackwhite_image(char *file_path) {
 	printf("<netpbm>: opening the image at \"%s\".\n", file_path);
 
 	// opening the file and getting the header of it
@@ -466,13 +466,13 @@ struct blackwhite_image* open_blackwhite_image(char *file_path) {
 	if (image == NULL) return NULL;
 
 	// the resulting image is going to be stored here
-	struct blackwhite_image* result = create_blackwhite_image(image->width, image->height);
+	struct blackwhite_image *result = create_blackwhite_image(image->width, image->height);
 
 	printf("<netpbm>: parsing the image...\n");
 
 	// parsing the image according to the specified type
 	int parse_result;
-	switch(image->version) {
+	switch (image->version) {
 		case NETPBM_BLACKWHITE_ASCII:
 			parse_result = _parse_blackwhite_body_ascii(image->stream, result);
 			break;
@@ -494,7 +494,7 @@ struct blackwhite_image* open_blackwhite_image(char *file_path) {
 	return result;
 }
 
-/**
+/*
  * Reading grayscale pixels represented as ASCII text from the image file.
  *
  * Returns -1 if error occurred, otherwise returns 0.
@@ -524,7 +524,7 @@ static int _parse_blackwhite_body_ascii(FILE *stream, struct blackwhite_image *i
 	return 0;
 }
 
-/**
+/*
  * Reading black and white image pixels represented as bytes from the image file.
  *
  * Returns -1 if error occurred, otherwise returns 0.
@@ -550,7 +550,7 @@ static int _parse_blackwhite_body_binary(FILE *stream, struct blackwhite_image *
 	return 0;
 }
 
-/**
+/*
  * Uses existing rgb_image structure to save it to disk in the P3 format
  *
  * Returns -1 if could not open file, otherwise returns 0.
@@ -579,11 +579,10 @@ int write_rgb_image(char *file_path, struct rgb_image *image, int format) {
 		for (int x = 0; x < image->width; x++) {
 			if (format == NETPBM_ASCII) {
 				fprintf(stream, "%u %u %u ",
-					image->matrix[y][x].r,
-					image->matrix[y][x].g,
-					image->matrix[y][x].b);
-			}
-			else {
+				        image->matrix[y][x].r,
+				        image->matrix[y][x].g,
+				        image->matrix[y][x].b);
+			} else {
 				fwrite(&image->matrix[y][x], sizeof(struct rgb_color), 1, stream);
 			}
 		}
@@ -597,7 +596,7 @@ int write_rgb_image(char *file_path, struct rgb_image *image, int format) {
 	return 0;
 }
 
-/**
+/*
  * Uses existing grayscale_image structure to save it to disk in the P2 grayscale format
  *
  * Returns -1 if could not open file, otherwise returns 0.
@@ -637,7 +636,7 @@ int write_grayscale_image(char *file_path, struct grayscale_image *image, int fo
 	return 0;
 }
 
-/**
+/*
  * Uses existing blackwhite_image structure to save it to disk in the P1
  * black and white format
  *

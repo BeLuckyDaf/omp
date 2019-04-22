@@ -4,14 +4,14 @@
 #include "src/colors.h"
 
 double get_timestamp(struct timeval from, struct timeval to) {
-    double timestamp = (to.tv_sec - from.tv_sec);
-    if (to.tv_usec < from.tv_usec) {
-        timestamp -= (from.tv_usec - to.tv_usec)/1000000.0;
-    } else {
-        timestamp += (to.tv_usec - from.tv_usec)/1000000.0;
-    }
+	double timestamp = (to.tv_sec - from.tv_sec);
+	if (to.tv_usec < from.tv_usec) {
+		timestamp -= (from.tv_usec - to.tv_usec) / 1000000.0;
+	} else {
+		timestamp += (to.tv_usec - from.tv_usec) / 1000000.0;
+	}
 
-    return timestamp;
+	return timestamp;
 }
 
 int main(int argc, char **argv) {
@@ -37,14 +37,14 @@ int main(int argc, char **argv) {
 	gettimeofday(&overall_start_time, NULL);
 
 	// open the image
-	struct rgb_image* image = open_rgb_image(source);
+	struct rgb_image *image = open_rgb_image(source);
 	if (image == NULL) return -1;
 
 	// set the sobel operation timer
 	gettimeofday(&sobel_start_time, NULL);
 
 	// perform the sobel operation
-	struct grayscale_image* sobel = sobel_filter_rgb(image, threads);
+	struct grayscale_image *sobel = sobel_filter_rgb(image, threads);
 	if (sobel == NULL) return -1;
 
 	// stop the sobel timer
