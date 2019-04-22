@@ -2,7 +2,8 @@
 
 The program allows the user to open an existing RGB image, 
 convert it to grayscale, apply the Sobel operator to 
-the image and then save it to a file.
+the image and then save it to a file. Once again, the resulting
+file will contain the image in the grayscale format.
 
 Even though, the task only includes what is described above,
 the codebase has a lot more potential. It allows to open, read
