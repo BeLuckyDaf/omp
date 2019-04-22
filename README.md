@@ -19,7 +19,7 @@ root folder of the project.
 
 The binary can then be found at `%PROJECT%/build/netpbm-sobel`.
 
-## Running
+## Usage
 
 The program must be executed with the following command line
 arguments: `./netpbm-sobel "source_image_path" "new_image_path" [threads]`,
