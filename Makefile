@@ -25,7 +25,7 @@ $(BUILD_DIR)/%.o: ./%.c | $$(@D)/.
 	
 # LINKING THE OBJECTS INTO AN EXECUTABLE
 $(BUILD_DIR)/netpbm-sobel: $(OBJS)
-	$(CC) $(CLIBS) $^ -o $@
+	$(CC) $^ -o $@ $(CLIBS)
 
 clean:
 	rm -rf ./$(BUILD_DIR)/*.o
