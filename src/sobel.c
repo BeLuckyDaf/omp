@@ -109,7 +109,7 @@ struct grayscale_image* sobel_filter_grayscale(struct grayscale_image *image, in
 		}
 
 		// create the thread and add its id to the array of ids
-		pthread_create(&thread_ids[s / step], NULL, sobel_filter_grayscale_thread_job, (void*)task);
+		pthread_create(&thread_ids[s / step], NULL, _sobel_filter_grayscale_thread_job, (void*)task);
 	}
 
 	printf("<sobel>: threads launched, working...\n");
@@ -132,7 +132,7 @@ struct grayscale_image* sobel_filter_grayscale(struct grayscale_image *image, in
  *
  * Returns NULL.
  */
-void* sobel_filter_grayscale_thread_job(void *data) {
+void* _sobel_filter_grayscale_thread_job(void *data) {
 	// converting void pointer to a data structure
 	struct sobel_thread_task task = *((struct sobel_thread_task*) data);
 

@@ -84,26 +84,25 @@ struct grayscale_image* rgb_to_grayscale_image(struct rgb_image *image);
 
 /* File IO */
 struct rgb_image* open_rgb_image(char *file_path);
-int parse_rgb_body_ascii(FILE *stream, struct rgb_image *image);
-int parse_rgb_body_binary(FILE *stream, struct rgb_image *image);
-
 struct grayscale_image* open_grayscale_image(char *file_path);
-int parse_grayscale_body_ascii(FILE *stream, struct grayscale_image *image);
-int parse_grayscale_body_binary(FILE *stream, struct grayscale_image *image);
-
 struct blackwhite_image* open_blackwhite_image(char *file_path);
-int parse_blackwhite_body_ascii(FILE *stream, struct blackwhite_image *image);
-int parse_blackwhite_body_binary(FILE *stream, struct blackwhite_image *image);
 
 struct image_file* open_image_file(char* file_path);
 int write_rgb_image(char *file_path, struct rgb_image *image, int format);
 int write_grayscale_image(char *file_path, struct grayscale_image *image, int format);
 int write_blackwhite_image(char *file_path, struct blackwhite_image *image, int format);
-int read_header(FILE *stream, int *version, u_int32_t *width, u_int32_t *height, u_int32_t *scale);
-int skip_comment(FILE *stream);
+
+static int _parse_rgb_body_ascii(FILE *stream, struct rgb_image *image);
+static int _parse_rgb_body_binary(FILE *stream, struct rgb_image *image);
+static int _parse_grayscale_body_ascii(FILE *stream, struct grayscale_image *image);
+static int _parse_grayscale_body_binary(FILE *stream, struct grayscale_image *image);
+static int _parse_blackwhite_body_ascii(FILE *stream, struct blackwhite_image *image);
+static int _parse_blackwhite_body_binary(FILE *stream, struct blackwhite_image *image);
+static int _read_header(FILE *stream, int *version, u_int32_t *width, u_int32_t *height, u_int32_t *scale);
+static int _skip_comment(FILE *stream);
 
 /* Miscellaneous */
-int get_netpbm_version(char* image_version);
+static int _get_netpbm_version(char *image_version);
 
 /* Releasing memory */
 void free_rgb_image(struct rgb_image *image);

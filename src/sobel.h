@@ -29,7 +29,7 @@ extern const int sobel_kernel_y[3][3];
 /** FUNCTIONS */
 
 /* Helpers */
-void* sobel_filter_grayscale_thread_job(void *data);
+void* _sobel_filter_grayscale_thread_job(void *data);
 u_int32_t calculate_sobel_at(struct grayscale_image* image, int x, int y);
 
 /* Sobel operation */

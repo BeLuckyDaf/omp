@@ -135,7 +135,7 @@ struct grayscale_image* rgb_to_grayscale_image(struct rgb_image* image) {
  *
  * Returns EOF if end-of-file is reached, otherwise returns 0.
  */
-int skip_comment(FILE *stream) {
+static int _skip_comment(FILE *stream) {
 	int c;
 	while ((((char)(c = fgetc(stream))) > '9' || c < '0') && c != EOF) {
 		if (c == '#') while(((char)(c = fgetc(stream))) != '\n' && c != EOF);
@@ -151,24 +151,24 @@ int skip_comment(FILE *stream) {
  *
  * Returns -1 if error occurred, otherwise returns 0.
  */
-int read_header(FILE *stream, int *version, u_int32_t *width, u_int32_t *height, u_int32_t *scale) {
+static int _read_header(FILE *stream, int *version, u_int32_t *width, u_int32_t *height, u_int32_t *scale) {
 	char image_version_str[3];
 	int items_read = fscanf(stream, "%2s", image_version_str);
 
 	// check for the specified format
-	*version = get_netpbm_version(image_version_str);
+	*version = _get_netpbm_version(image_version_str);
 	if (*version == -1) {
 		printf("<netpbm>: there was an error reading the version.\n");
 		return -1;
 	}
 
-	skip_comment(stream);
+	_skip_comment(stream);
 	if (fscanf(stream, "%u", width) < 1) {
 		printf("<netpbm>: could not read width.\n");
 		return -1;
 	}
 
-	skip_comment(stream);
+	_skip_comment(stream);
 	if (fscanf(stream, "%u", height) < 1) {
 		printf("<netpbm>: could not read height.\n");
 		return -1;
@@ -179,7 +179,7 @@ int read_header(FILE *stream, int *version, u_int32_t *width, u_int32_t *height,
 		return 0;
 	}
 
-	skip_comment(stream);
+	_skip_comment(stream);
 	if (fscanf(stream, "%u", scale) < 1) {
 		printf("<netpbm>: could not read scale.\n");
 		return -1;
@@ -194,7 +194,7 @@ int read_header(FILE *stream, int *version, u_int32_t *width, u_int32_t *height,
  * Returns -1 if format is incorrect, 0 if invalid version is specified,
  * otherwise returns the version number 1..6.
  */
-int get_netpbm_version(char* image_version) {
+static int _get_netpbm_version(char *image_version) {
 	if (strlen(image_version) < 2 || image_version[0] != 'P') return -1;
 
 	if (image_version[1] > '0' && image_version[1] < '7') return image_version[1] - '0';
@@ -222,7 +222,7 @@ struct image_file* open_image_file(char* file_path) {
 	}
 
 	// reading the header
-	if (read_header(stream, &version, &width, &height, &scale) != 0) {
+	if (_read_header(stream, &version, &width, &height, &scale) != 0) {
 		fclose(stream);
 		return NULL; // failed reading header
 	}
@@ -267,10 +267,10 @@ struct rgb_image* open_rgb_image(char *file_path) {
 	int parse_result;
 	switch(image->version) {
 		case NETPBM_RGB_ASCII:
-			parse_result = parse_rgb_body_ascii(image->stream, result);
+			parse_result = _parse_rgb_body_ascii(image->stream, result);
 			break;
 		case NETPBM_RGB_BINARY:
-			parse_result = parse_rgb_body_binary(image->stream, result);
+			parse_result = _parse_rgb_body_binary(image->stream, result);
 			break;
 		default:
 			printf("<netpbm>: incorrect version of the image.\n");
@@ -292,7 +292,7 @@ struct rgb_image* open_rgb_image(char *file_path) {
  *
  * Returns -1 if error occurred, otherwise returns 0.
  */
-int parse_rgb_body_ascii(FILE *stream, struct rgb_image *image) {
+static int _parse_rgb_body_ascii(FILE *stream, struct rgb_image *image) {
 	// handy struct for the parsed pixels
 	struct rgb_color pixel;
 
@@ -319,7 +319,7 @@ int parse_rgb_body_ascii(FILE *stream, struct rgb_image *image) {
  *
  * Returns -1 if error occurred, otherwise returns 0.
  */
-int parse_rgb_body_binary(FILE *stream, struct rgb_image *image) {
+static int _parse_rgb_body_binary(FILE *stream, struct rgb_image *image) {
 	// this time chars will do
 	u_int8_t rgb[3];
 
@@ -334,7 +334,10 @@ int parse_rgb_body_binary(FILE *stream, struct rgb_image *image) {
 			}
 
 			// assign the color
-			image->matrix[y][x] = (struct rgb_color) { .r = (u_int32_t)rgb[0], .g = (u_int32_t)rgb[1], .b = (u_int32_t)rgb[2] };
+			image->matrix[y][x] = (struct rgb_color) {
+				.r = (u_int32_t)rgb[0],
+				.g = (u_int32_t)rgb[1],
+				.b = (u_int32_t)rgb[2]};
 		}
 	}
 
@@ -369,10 +372,10 @@ struct grayscale_image* open_grayscale_image(char *file_path) {
 	int parse_result;
 	switch(image->version) {
 		case NETPBM_GRAYSCALE_ASCII:
-			parse_result = parse_grayscale_body_ascii(image->stream, result);
+			parse_result = _parse_grayscale_body_ascii(image->stream, result);
 			break;
 		case NETPBM_GRAYSCALE_BINARY:
-			parse_result = parse_grayscale_body_binary(image->stream, result);
+			parse_result = _parse_grayscale_body_binary(image->stream, result);
 			break;
 		default:
 			printf("<netpbm>: incorrect version of the image.\n");
@@ -394,7 +397,7 @@ struct grayscale_image* open_grayscale_image(char *file_path) {
  *
  * Returns -1 if error occurred, otherwise returns 0.
  */
-int parse_grayscale_body_ascii(FILE *stream, struct grayscale_image *image) {
+static int _parse_grayscale_body_ascii(FILE *stream, struct grayscale_image *image) {
 	// an unsigned integer for the grayscale value
 	u_int32_t pixel;
 
@@ -421,7 +424,7 @@ int parse_grayscale_body_ascii(FILE *stream, struct grayscale_image *image) {
  *
  * Returns -1 if error occurred, otherwise returns 0.
  */
-int parse_grayscale_body_binary(FILE *stream, struct grayscale_image *image) {
+static int _parse_grayscale_body_binary(FILE *stream, struct grayscale_image *image) {
 	// an unsigned integer for the grayscale value
 	u_int8_t pixel;
 
@@ -471,10 +474,10 @@ struct blackwhite_image* open_blackwhite_image(char *file_path) {
 	int parse_result;
 	switch(image->version) {
 		case NETPBM_BLACKWHITE_ASCII:
-			parse_result = parse_blackwhite_body_ascii(image->stream, result);
+			parse_result = _parse_blackwhite_body_ascii(image->stream, result);
 			break;
 		case NETPBM_BLACKWHITE_BINARY:
-			parse_result = parse_blackwhite_body_binary(image->stream, result);
+			parse_result = _parse_blackwhite_body_binary(image->stream, result);
 			break;
 		default:
 			printf("<netpbm>: incorrect version of the image.\n");
@@ -496,7 +499,7 @@ struct blackwhite_image* open_blackwhite_image(char *file_path) {
  *
  * Returns -1 if error occurred, otherwise returns 0.
  */
-int parse_blackwhite_body_ascii(FILE *stream, struct blackwhite_image *image) {
+static int _parse_blackwhite_body_ascii(FILE *stream, struct blackwhite_image *image) {
 	// an unsigned integer for the grayscale value
 	char pixel;
 
@@ -526,7 +529,7 @@ int parse_blackwhite_body_ascii(FILE *stream, struct blackwhite_image *image) {
  *
  * Returns -1 if error occurred, otherwise returns 0.
  */
-int parse_blackwhite_body_binary(FILE *stream, struct blackwhite_image *image) {
+static int _parse_blackwhite_body_binary(FILE *stream, struct blackwhite_image *image) {
 	// an unsigned integer for the grayscale value
 	u_int8_t pixel;
 
@@ -575,7 +578,10 @@ int write_rgb_image(char *file_path, struct rgb_image *image, int format) {
 	for (int y = 0; y < image->height; y++) {
 		for (int x = 0; x < image->width; x++) {
 			if (format == NETPBM_ASCII) {
-				fprintf(stream, "%u %u %u ", image->matrix[y][x].r, image->matrix[y][x].g, image->matrix[y][x].b);
+				fprintf(stream, "%u %u %u ",
+					image->matrix[y][x].r,
+					image->matrix[y][x].g,
+					image->matrix[y][x].b);
 			}
 			else {
 				fwrite(&image->matrix[y][x], sizeof(struct rgb_color), 1, stream);
